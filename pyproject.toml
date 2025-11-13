@@ -1,0 +1,9 @@
+[project]
+name = "IRCC_Webform"
+version = "0.1.0"
+dependencies = [
+    "pandas>=2.3.3",
+]
+
+requires-python = "==3.13.8"
+
