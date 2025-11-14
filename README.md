@@ -1,6 +1,6 @@
 # IRCC WebForm
 
-This is a IRCC webform auto script, for people who searched and desperately needed this repop, 
+This is a IRCC webform auto script, for people who searched and desperately needed this repo, 
 may God send your soul straight to heaven because you have done (and maybe overdue) all your torture on earth from IRCC. 
 Amen. 
 
