@@ -1,2 +1,2 @@
 config.yaml
-./file_src/**
+/file_src/*

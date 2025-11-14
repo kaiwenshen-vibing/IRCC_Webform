@@ -1,3 +1,7 @@
+import argparse
+import random
+import time
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import yaml
@@ -136,5 +140,101 @@ def run(playwright: Playwright, *, use_persistent_profile: bool = USE_PERSISTENT
             browser.close()
 
 
-with sync_playwright() as playwright:
-    run(playwright)
+def schedule_runs(
+    playwright: Playwright,
+    count: int,
+    *,
+    start_hour: int = 9,
+    end_hour: int = 21,
+    use_persistent_profile: bool = USE_PERSISTENT_PROFILE,
+) -> None:
+    if count <= 0:
+        raise ValueError("Schedule count must be greater than zero.")
+    if start_hour >= end_hour:
+        raise ValueError("Start hour must be before end hour.")
+
+    now = datetime.now()
+    window_start = now.replace(hour=start_hour, minute=0, second=0, microsecond=0)
+    window_end = now.replace(hour=end_hour, minute=0, second=0, microsecond=0)
+
+    if now >= window_end:
+        window_start += timedelta(days=1)
+        window_end += timedelta(days=1)
+    elif now > window_start:
+        window_start = now
+
+    window_seconds = (window_end - window_start).total_seconds()
+    if window_seconds <= 0:
+        raise ValueError("Unable to compute a valid scheduling window.")
+
+    scheduled_times = sorted(
+        window_start + timedelta(seconds=random.uniform(0, window_seconds))
+        for _ in range(count)
+    )
+
+    for idx, target_time in enumerate(scheduled_times, start=1):
+        wait_seconds = (target_time - datetime.now()).total_seconds()
+        if wait_seconds > 0:
+            minutes = wait_seconds / 60
+            print(
+                f"Run {idx}/{count} scheduled for {target_time:%Y-%m-%d %H:%M:%S}. "
+                f"Waiting {minutes:.1f} minutes."
+            )
+            time.sleep(wait_seconds)
+        else:
+            print(
+                f"Scheduled run {idx}/{count} time {target_time:%Y-%m-%d %H:%M:%S} "
+                "has already passed, running immediately."
+            )
+
+        print(f"Starting run {idx}/{count} at {datetime.now():%Y-%m-%d %H:%M:%S}")
+        run(playwright, use_persistent_profile=use_persistent_profile)
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Automate IRCC webform submissions.")
+    parser.add_argument(
+        "--schedule-count",
+        type=int,
+        default=0,
+        help="Number of scheduled runs between 9am and 9pm (default: run immediately once).",
+    )
+    parser.add_argument(
+        "--schedule-start-hour",
+        type=int,
+        default=9,
+        help="Start hour for random scheduling window (default: 9).",
+    )
+    parser.add_argument(
+        "--schedule-end-hour",
+        type=int,
+        default=21,
+        help="End hour for random scheduling window (default: 21).",
+    )
+    parser.add_argument(
+        "--persistent-profile",
+        dest="use_persistent_profile",
+        action=argparse.BooleanOptionalAction,
+        default=USE_PERSISTENT_PROFILE,
+        help="Toggle use of the persistent Chrome profile defined in config.yaml.",
+    )
+    return parser.parse_args()
+
+
+def main():
+    args = parse_args()
+    with sync_playwright() as playwright:
+        if args.schedule_count and args.schedule_count > 0:
+            schedule_runs(
+                playwright,
+                args.schedule_count,
+                start_hour=args.schedule_start_hour,
+                end_hour=args.schedule_end_hour,
+                use_persistent_profile=args.use_persistent_profile,
+            )
+        else:
+            run(playwright, use_persistent_profile=args.use_persistent_profile)
+
+
+if __name__ == "__main__":
+    main()
