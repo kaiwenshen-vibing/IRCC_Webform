@@ -1,12 +1,12 @@
 # IRCC WebForm
 
 This is a IRCC webform auto script, for people who searched and desperately needed this repo, 
-may God grant you immediate passage to heaven—because you’ve clearly endured more than enough suffering from IRCC.
+May God fast-track your soul straight to heaven—you’ve already completed your fair share of suffering dealing with IRCC.
+
 Amen.
 
 
-
-this project uses uv so after git clone, do uv sync, then do one more for playwright: 
+This project uses uv so after git clone, do uv sync, then do one more for playwright: 
 ```
 playwright install
 ```
