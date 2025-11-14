@@ -25,5 +25,5 @@ attachments:
   - "./file_src/xxxx.pdf"
 
 profile:
-  use_persistent_profile: false # turn this to true to make it use your local Chrome data, which will make it more real.
+  use_persistent_profile: false # turn this to true to make it use your local Chrome data, which will make it more real, but google will evict your login and a bit troublesome to login again.  
   persistent_profile_path: 'C:\Users\{your name}\AppData\Local\Google\Chrome\User Data'
