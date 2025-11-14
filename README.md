@@ -1,8 +1,8 @@
 # IRCC WebForm
 
 This is a IRCC webform auto script, for people who searched and desperately needed this repo, 
-may God send your soul straight to heaven because you have done (and maybe overdid) all your torture on earth from IRCC. 
-Amen. 
+may God grant you immediate passage to heaven—because you’ve clearly endured more than enough suffering from IRCC.
+Amen.
 
 
 
