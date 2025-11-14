@@ -99,8 +99,9 @@ def finalize_submission(page):
     human_click(page, page.get_by_role("button", name="Review your request"))
     human_move_mouse(page)
     human_pause(page, 1200, 2000)
-    human_click(page, page.get_by_role("button", name="Submit your request"))
-
+    with page.expect_navigation():
+        # this wait is because IRCC webform needs time to process before actually send, background task is a js driven complier to compile all your answers
+        human_click(page, page.get_by_role("button", name="Submit your request"))
 
 def run(playwright: Playwright, *, use_persistent_profile: bool = USE_PERSISTENT_PROFILE) -> None:
     browser = None
