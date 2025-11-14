@@ -1,0 +1,29 @@
+form_values:
+  first_name: "John"
+  last_name: "Doe"
+  email: "JohnDoe@earth.com"
+  dob:
+    year: "1000"
+    month: "00"
+    day: "00"
+  country_of_birth: "1852" # this is China, look it up using chrome dev tools
+  application_number: "Wxxxxx"
+  application_type: "2" # Temporary resident
+  application_subcategory: "14" # Work Permit
+  uci: "xxxxxxxx"
+  country_of_residence: "1842" # this is Canada
+  nationality: "1852"
+  passport_number: "xxxxxxxxx"
+  passport_country: "1852"# this is china
+  request_reason: "63"# this means you were not get asked by someone to submit additional documents
+
+request_message: >
+  xxxxxxx
+
+attachments:
+  - "./file_src/xxxx.pdf"
+  - "./file_src/xxxx.pdf"
+
+profile:
+  use_persistent_profile: false
+  persistent_profile_path: 'C:\Users\{your name}\AppData\Local\Google\Chrome\User Data'

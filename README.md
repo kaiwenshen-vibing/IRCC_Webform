@@ -1,4 +1,7 @@
 # IRCC WebForm
 
-this is a IRCC webform auto script, for people who searched and stumbled on this repop, may God send you straight to heaven because 
-you have done all your torture on earth from IRCC. 
+This is a IRCC webform auto script, for people who searched and desperately needed this repop, 
+may God send your soul straight to heaven because you have done (and maybe overdue) all your torture on earth from IRCC. 
+Amen. 
+
+optimally please don't get pass 3 web forms per day. 

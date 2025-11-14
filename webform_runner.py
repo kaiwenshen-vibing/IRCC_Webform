@@ -1,3 +1,6 @@
+from pathlib import Path
+
+import yaml
 from playwright.sync_api import Playwright, sync_playwright
 
 from human_utils import (
@@ -10,34 +13,24 @@ from human_utils import (
     human_type,
 )
 
-FORM_VALUES = {
-    "first_name": "Kaiwen",
-    "last_name": "Shen",
-    "email": "kevinskw@outlook.com",
-    "dob": {"year": "2000", "month": "03", "day": "30"},
-    "country_of_birth": "1852",
-    "application_number": "W308468626",
-    "application_type": "2",
-    "application_subcategory": "14",
-    "uci": "1116762582",
-    "country_of_residence": "1842",
-    "nationality": "1852",
-    "passport_number": "EB7769111",
-    "passport_country": "1852",
-    "request_reason": "63",
-}
+CONFIG_PATH = Path(__file__).with_name("config.yaml")
 
-REQUEST_MESSAGE = (
-    "I have been incorrectly refused PGWP, please help, this is a request for "
-    "reconsideration. I have a full time job working for Canadian Pension Plan, "
-    "detail in the documents. I have submitted this before but have not received "
-    "response yet."
-)
 
-ATTACHMENTS = [
-    "./file_src/reconsideration_request.pdf",
-    "./file_src/ielts.pdf",
-]
+def load_config(path: Path = CONFIG_PATH):
+    with path.open("r", encoding="utf-8") as source:
+        data = yaml.safe_load(source)
+    if not isinstance(data, dict):
+        raise ValueError(f"Configuration file {path} is invalid or empty.")
+    return data
+
+
+CONFIG = load_config()
+FORM_VALUES = CONFIG["form_values"]
+REQUEST_MESSAGE = CONFIG["request_message"]
+ATTACHMENTS = CONFIG["attachments"]
+PROFILE_CONFIG = CONFIG.get("profile", {})
+USE_PERSISTENT_PROFILE = PROFILE_CONFIG.get("use_persistent_profile", False)
+PERSISTENT_PROFILE_PATH = PROFILE_CONFIG.get("persistent_profile_path")
 
 
 def load_form(page):
@@ -105,25 +98,42 @@ def finalize_submission(page):
     human_click(page, page.get_by_role("button", name="Submit your request"))
 
 
-def run(playwright: Playwright) -> None:
-    browser, context, fingerprint = create_human_context(playwright, headless=False)
-    page = context.new_page()
-    print(
-        "Using fingerprint:",
-        fingerprint["user_agent"],
-        fingerprint["locale"],
-        fingerprint["timezone"],
-        fingerprint["viewport"],
-    )
+def run(playwright: Playwright, *, use_persistent_profile: bool = USE_PERSISTENT_PROFILE) -> None:
+    browser = None
+    context = None
+    fingerprint = None
 
-    load_form(page)
-    fill_personal_information(page)
-    fill_application_details(page)
-    upload_supporting_documents(page)
-    finalize_submission(page)
+    if use_persistent_profile:
+        if not PERSISTENT_PROFILE_PATH:
+            raise ValueError("Persistent profile path must be set in config.yaml.")
+        context = playwright.chromium.launch_persistent_context(
+            user_data_dir=PERSISTENT_PROFILE_PATH,
+            headless=False,
+        )
+        page = context.pages[0] if context.pages else context.new_page()
+        print(f"Using persistent Chrome profile at {PERSISTENT_PROFILE_PATH}")
+    else:
+        browser, context, fingerprint = create_human_context(playwright, headless=False)
+        page = context.new_page()
+        print(
+            "Using fingerprint:",
+            fingerprint["user_agent"],
+            fingerprint["locale"],
+            fingerprint["timezone"],
+            fingerprint["viewport"],
+        )
 
-    context.close()
-    browser.close()
+    try:
+        load_form(page)
+        fill_personal_information(page)
+        fill_application_details(page)
+        upload_supporting_documents(page)
+        finalize_submission(page)
+    finally:
+        if context:
+            context.close()
+        if browser:
+            browser.close()
 
 
 with sync_playwright() as playwright:
