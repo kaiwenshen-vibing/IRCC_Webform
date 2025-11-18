@@ -38,7 +38,8 @@ PERSISTENT_PROFILE_PATH = PROFILE_CONFIG.get("persistent_profile_path")
 
 
 def load_form(page):
-    page.goto("https://secure.cic.gc.ca/ClientContact/en/Application/Form/72", wait_until="domcontentloaded")
+    # page.goto("https://secure.cic.gc.ca/ClientContact/en/Application/Form/72", wait_until="domcontentloaded")
+    page.goto("https://secure.cic.gc.ca/ClientContact/en/Application/Form/69", wait_until="domcontentloaded")
     human_pause(page, 650, 1200)
     human_move_mouse(page)
     human_click(page, page.get_by_role("radio", name="I'm the principal applicant"))
@@ -73,9 +74,10 @@ def fill_application_details(page):
     human_select(page, page.get_by_label("What is the issuing country/"), FORM_VALUES["passport_country"])
 
     human_click(page, page.get_by_text("Online", exact=True))
-    human_select(page, page.get_by_label("Did we ask you to add the"), FORM_VALUES["request_reason"])
+    # human_select(page, page.get_by_label("Did we ask you to add the"), FORM_VALUES["request_reason"])
     human_scroll(page)
-    human_type(page, page.get_by_role("textbox", name="* Please explain in the text"), REQUEST_MESSAGE, min_delay=18, max_delay=70)
+    # human_type(page, page.get_by_role("textbox", name="* Please explain in the text"), REQUEST_MESSAGE, min_delay=18, max_delay=70)
+    human_type(page, page.get_by_role("textbox", name="* Please explain how we can help"), REQUEST_MESSAGE, min_delay=18, max_delay=70)
 
 
 def upload_supporting_documents(page):
@@ -132,7 +134,7 @@ def run(playwright: Playwright, *, use_persistent_profile: bool = USE_PERSISTENT
         load_form(page)
         fill_personal_information(page)
         fill_application_details(page)
-        upload_supporting_documents(page)
+        # upload_supporting_documents(page)
         finalize_submission(page)
     finally:
         if context:
